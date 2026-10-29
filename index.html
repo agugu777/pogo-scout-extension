@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#f6f7fb" />
+  <title>Pogo Scout｜寶可夢搜尋助手</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="#" aria-label="Pogo Scout 首頁">
+        <span class="brand-mark"><span></span></span>
+        <span><strong>pogo scout</strong><small>POKÉMON RADAR</small></span>
+      </a>
+      <div class="side-label">工作區</div>
+      <nav class="nav-list" aria-label="主導覽">
+        <a class="nav-item active" href="#monitor"><span class="nav-icon">◉</span>搜尋監控<span class="nav-dot"></span></a>
+        <a class="nav-item" href="#targets"><span class="nav-icon">✦</span>目標清單<span class="nav-count" id="nav-target-count">1</span></a>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="privacy-card"><span class="privacy-icon">⌂</span><strong>設定只存在本機</strong><p>你的目標與座標會儲存在這台裝置。</p></div>
+        <div class="profile"><div class="avatar">P</div><div><strong>訓練家</strong><small>個人工作區</small></div><span class="profile-menu">•••</span></div>
+      </div>
+    </aside>
+
+    <main class="main" id="monitor">
+      <header class="topbar"><div class="crumb">工作區 <span>/</span> <strong>搜尋監控</strong></div><div class="top-actions"><span class="local-pill"><i></i> 本機模式</span><button class="icon-button" id="help-button" aria-label="說明">?</button></div></header>
+      <div class="content">
+        <section class="welcome-row"><div><div class="eyebrow">POKÉMON GO · PERSONAL RADAR</div><h1>搜尋監控</h1><p class="subtitle">設定想找的寶可夢，準備好後就能在背景留意新出現的目標。</p></div><div class="status-chip" id="status-chip"><span class="status-pulse"></span><span id="status-label">尚未開始</span></div></section>
+
+        <section class="notice" id="source-notice"><div class="notice-symbol">i</div><div><strong>面板原型已就緒，搜尋來源尚未接上</strong><p>目標、Shiny 篩選與地點設定可先儲存。要開始背景搜尋，還需確認網站免費搜尋使用的資料介面。</p></div><button class="notice-close" id="notice-close" aria-label="收起說明">×</button></section>
+
+        <div class="dashboard-grid">
+          <div class="left-column">
+            <section class="card target-card" id="targets">
+              <div class="section-heading"><div><div class="step-label"><span>01</span> SEARCH TARGETS</div><h2>想找哪些寶可夢？</h2></div><button class="text-button" id="clear-targets">清除全部</button></div>
+              <p class="helper">加入一種或多種目標。找到其中任一種時即可通知。</p>
+              <div class="target-input-row"><div class="search-input-wrap"><span class="search-glass">⌕</span><input id="pokemon-input" type="text" placeholder="輸入寶可夢名稱，例如 Gengar" autocomplete="off" /><div id="suggestions" class="suggestions hidden"></div></div><button class="add-button" id="add-target">＋ 加入</button></div>
+              <div class="target-chips" id="target-chips"></div>
+              <div class="divider"></div>
+              <div class="filter-row"><div><strong class="field-title">Shiny 篩選</strong><div class="field-hint">只通知符合閃光條件的目標</div></div><label class="switch"><input type="checkbox" id="shiny-only" /><span class="switch-track"></span></label></div>
+              <div class="filter-caption"><span class="sparkle">✦</span><span id="shiny-caption">一般與 Shiny 都通知</span></div>
+            </section>
+
+            <section class="card location-card">
+              <div class="section-heading"><div><div class="step-label"><span>02</span> SEARCH AREA</div><h2>搜尋地點</h2></div><button class="text-button" id="clear-location">清除</button></div>
+              <p class="helper">輸入座標和半徑，限定搜尋範圍。</p>
+              <div class="location-fields"><label class="field"><span>座標 <em>LAT, LNG</em></span><input id="coords" type="text" inputmode="decimal" placeholder="例如 25.0330, 121.5654" /></label><label class="field radius-field"><span>半徑 <em>KM</em></span><div class="unit-input"><input id="radius" type="number" min="1" max="1000" value="5" /><span>km</span></div></label></div>
+              <div class="location-foot"><span><span class="pin-icon">⌖</span> 座標只儲存在此裝置</span><button class="text-button" id="use-location">使用目前位置</button></div>
+            </section>
+
+            <section class="card preference-card">
+              <div class="section-heading"><div><div class="step-label"><span>03</span> ALERT PREFERENCES</div><h2>通知偏好</h2></div></div>
+              <div class="preference-row"><div class="pref-icon bell">♧</div><div class="pref-copy"><strong>桌面通知</strong><span id="permission-status">測試通知或開始監控時再啟用</span></div><button class="secondary-button" id="test-notification">測試通知</button></div>
+              <div class="preference-row interval-row"><div class="pref-icon clock">◷</div><div class="pref-copy"><strong>搜尋間隔</strong><span>自動檢查的頻率</span></div><label class="interval-control"><select id="interval"><option value="1">每 1 分鐘</option><option value="2" selected>每 2 分鐘</option><option value="5">每 5 分鐘</option><option value="10">每 10 分鐘</option></select><span class="select-chevron">⌄</span></label></div>
+            </section>
+          </div>
+
+          <aside class="right-column">
+            <section class="card monitor-card"><div class="monitor-top"><div class="radar-art"><div class="radar-ring ring-one"></div><div class="radar-ring ring-two"></div><div class="radar-ring ring-three"></div><div class="radar-sweep"></div><div class="radar-center">✦</div><span class="radar-blip blip-one"></span><span class="radar-blip blip-two"></span></div><div class="monitor-heading"><span class="step-label">MONITOR STATUS</span><h2 id="monitor-title">準備好出發了嗎？</h2><p id="monitor-description">完成目標和地點設定後，啟動背景監控。</p></div></div><div class="monitor-divider"></div><div class="summary-list"><div><span class="summary-icon target-icon">✦</span><span>追蹤目標</span><strong id="summary-targets">1 種</strong></div><div><span class="summary-icon area-icon">⌖</span><span>搜尋範圍</span><strong id="summary-area">尚未設定</strong></div><div><span class="summary-icon time-icon">◷</span><span>檢查頻率</span><strong id="summary-interval">每 2 分鐘</strong></div></div><button class="start-button" id="start-monitor" disabled><span>▶</span> 開始監控</button><div class="button-note" id="button-note">等待搜尋來源連線</div></section>
+            <section class="card activity-card"><div class="activity-heading"><div><div class="step-label">RECENT ACTIVITY</div><h2>最近動態</h2></div><span class="activity-count" id="activity-count">0</span></div><div class="empty-activity" id="empty-activity"><div class="empty-orbit"><span>✦</span></div><strong>還沒有新動態</strong><p>符合條件的搜尋結果會顯示在這裡</p></div><div class="activity-list hidden" id="activity-list"></div></section>
+            <div class="tip-card"><span class="tip-star">✧</span><p><strong>小提醒</strong><br/>背景監控時瀏覽器可以繼續處理其他工作；桌面通知需允許此頁面傳送通知。</p></div>
+          </aside>
+        </div>
+        <footer>POGO SCOUT <span>·</span> 個人搜尋助手 <span class="footer-right">設定保存在你的瀏覽器</span></footer>
+      </div>
+    </main>
+  </div>
+  <dialog id="help-dialog"><div class="dialog-head"><strong>關於 Pogo Scout</strong><button id="close-help" aria-label="關閉">×</button></div><p>這是一個本機介面原型，可管理搜尋目標、地點與通知偏好。設定儲存在目前瀏覽器，不會上傳。</p><p>目前尚未連接 PoGo Coordinates 的搜尋資料來源，因此「開始監控」暫時停用。確認可用介面後，即可把免費搜尋接進背景檢查流程。</p><button class="secondary-button dialog-ok" id="help-ok">知道了</button></dialog>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="app.js"></script>
+</body>
+</html>

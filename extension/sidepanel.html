@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pogo Scout</title>
+  <link rel="stylesheet" href="sidepanel.css" />
+</head>
+<body>
+  <header class="header">
+    <div class="brand-mark" aria-hidden="true">✦</div>
+    <div class="brand"><strong>Pogo Scout</strong><small>PoGo Coordinates 搜尋通知</small></div>
+    <button class="button secondary settings-button" id="settings-toggle" aria-expanded="false" aria-controls="settings">⚙ 設定</button>
+    <section class="settings-menu" id="settings" hidden aria-label="設定">
+      <div class="section-head"><h2>設定</h2></div>
+      <div class="setting-row"><span>深色模式</span><label class="toggle" aria-label="深色模式"><input id="dark-mode" type="checkbox"><span></span></label></div>
+      <button class="button danger" id="clear-results">清空搜尋結果</button>
+    </section>
+  </header>
+  <main>
+    <section class="card connection">
+      <div class="section-head"><h1>搜尋頁連線</h1><span class="connection-dot" id="connection-dot"></span></div>
+      <p id="connection-state">檢查搜尋頁中…</p>
+      <div class="connection-actions">
+        <button class="button secondary" id="open-search">開啟搜尋頁</button>
+        <button class="button text" id="refresh-page">重新檢查</button>
+      </div>
+    </section>
+
+    <section class="card monitor">
+      <div class="section-head"><div><h2>自動搜尋</h2><p class="subhead">使用 PoGo Coordinates 頁面目前的篩選</p></div>
+        <label class="toggle" aria-label="啟用自動搜尋"><input id="running" type="checkbox"><span></span></label>
+      </div>
+      <label class="select-label" for="interval-mode">搜尋間隔</label>
+      <select id="interval-mode"><option value="preset">常規間隔</option><option value="custom">自訂間隔</option><option value="random">隨機間隔</option></select>
+      <div id="preset-fields"><select id="interval"><option value="1">每 1 分鐘</option><option value="2">每 2 分鐘</option><option value="3" selected>每 3 分鐘</option><option value="4">每 4 分鐘</option><option value="5">每 5 分鐘</option></select></div>
+      <div id="custom-fields" class="interval-fields" hidden><input id="custom-value" type="number" min="1" max="1440" value="1"><select id="custom-unit"><option value="seconds">秒</option><option value="minutes">分鐘</option></select></div>
+      <div id="random-fields" class="interval-fields" hidden><input id="random-min" type="number" min="1" max="86400" value="60" aria-label="最少秒數"><span>到</span><input id="random-max" type="number" min="1" max="86400" value="120" aria-label="最多秒數"><span>秒</span></div>
+      <div class="status-line"><span id="monitor-state">尚未開始</span><span id="last-checked">尚未搜尋</span></div>
+    </section>
+
+    <section class="card manual">
+      <div class="section-head"><h2>手動搜尋</h2></div>
+      <p class="subhead">立即按一次 PoGo Coordinates 的 Search，顯示這次搜尋結果。</p>
+      <button class="button primary manual-search" id="manual-search">手動搜尋</button>
+      <p class="manual-status" id="manual-status">按一下 Search，結果會顯示在這裡。</p>
+    </section>
+
+
+    <section class="card activity">
+      <div class="section-head"><h2>搜尋結果</h2><span class="count" id="activity-count">0</span></div>
+      <p class="subhead">顯示最近的手動與自動搜尋結果；桌面通知只提醒新出現的結果。</p>
+      <div id="activity-list" class="activity-list"><div class="empty">尚無新結果</div></div>
+    </section>
+    <p class="footnote">第一次搜尋會建立比對基準，不會通知已顯示的舊結果。請保持瀏覽器開啟。</p>
+  </main>
+  <div class="toast" id="toast" role="status"></div>
+  <div class="dialog-backdrop" id="clear-dialog" hidden>
+    <section class="confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="clear-dialog-title">
+      <h2 id="clear-dialog-title">要清空所有搜尋結果與去重紀錄嗎？</h2>
+      <div class="dialog-actions"><button class="button secondary" id="keep-results">保留</button><button class="button danger" id="confirm-clear">刪除</button></div>
+    </section>
+  </div>
+  <script src="sidepanel.js"></script>
+</body>
+</html>
