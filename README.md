@@ -1,71 +1,111 @@
 # Pogo Scout
 
-Pogo Scout is a lightweight browser extension prototype for the free PoGo Coordinates search page. It does not call the site's search API: the content script clicks the visible Search button on an already signed-in search tab and reads the rendered result cards. It never reads, copies, or stores the site's login credentials or cookies.
+Pogo Scout is a browser extension that checks the results shown on the [PoGo Coordinates search page](https://pogocoordinates.com/search) and notifies you when new results appear. Set up your search filters on PoGo Coordinates, then use Pogo Scout to run searches manually or at a chosen interval.
 
-## Project stages
+## What you need
 
-1. **Interface prototype — complete.** A responsive dashboard prototype lives in the project root.
-2. **Search-page connection — implemented as a browser-extension prototype.** It detects the signed-in search page, clicks its visible Search button, and reads displayed spawn cards. All filters are configured on PoGo Coordinates.
-3. **Background monitoring and alerts — implemented, needs extension-level real-browser verification.** Automatic monitoring offers common 1–5 minute intervals, custom fixed seconds/minutes, and a random seconds range. Manual search is a separate action and displays the latest scan results independently of the automatic monitoring status. Both paths add newly seen results to local activity and send desktop notifications.
-4. **Personal distribution — next.** Package and publish the extension (or privately distribute the zip) so each person installs it in their own browser and signs in to PoGo Coordinates there.
-5. **Public website — optional companion.** A static hosted landing page can explain and distribute the extension. The extension, not the website, performs page monitoring. No application database or user login is needed for the requested browser-local storage model.
+- A desktop browser that supports Manifest V3 extensions, such as Google Chrome or Brave.
+- A PoGo Coordinates account, signed in on the same browser profile.
+- The PoGo Coordinates search page open in that browser.
 
-## Important scope and limits
+Pogo Scout does not sign in for you or access the site's search API. It presses the visible **Search** button on the search page and reads the result cards displayed there. It does not read or store your password or cookies.
 
-- The site page supplies the actual Pokemon, location, Shiny, and other search filters. Every result returned by the current page filters can alert when it first appears after the initial baseline.
-- Desktop notifications and recent activity use the Pokemon sprite shown on each result card when the browser can read that image; if the image host blocks image export, the desktop notification uses its built-in icon and the activity row uses a sparkle. Small thumbnails are stored locally with recent activity (up to 30 entries).
-- Monitoring requires an open PoGo Coordinates search tab in the same browser profile, signed in. The extension does not log in for the user.
-- Interval, deduplication keys, and recent activity use `chrome.storage.local`; they do not sync between a user's home and work computers. Each browser/device keeps its own data and needs its own extension install and site login.
-- The default interval is 3 minutes, with 1–5 minute choices, custom fixed seconds/minutes, or a random interval between a minimum and maximum number of seconds. For example, 60–120 seconds gives a random interval between 1 and 2 minutes. Use an interval consistent with the site's current limits and stop monitoring if the site reports rate limiting or blocks automation. The site's terms prohibit bypassing rate limits/authentication/access controls and bulk redistribution: https://pogocoordinates.com/terms.
-- A browser extension cannot keep scanning after the browser is fully closed or the computer is asleep. Desktop notification delivery also depends on browser and operating-system notification settings.
-- The Chrome/Brave extension prototype has not yet been exercised in the user's live browser. Result-card markup can change, and should be verified before public distribution.
+## Install Pogo Scout
 
-## Verification note — 2026-10-29
+1. Download the project from GitHub using **Code → Download ZIP**, then extract the downloaded archive.
+2. Open the extensions page in your browser:
+   - Chrome: `chrome://extensions`
+   - Brave: `brave://extensions`
+3. Turn on **Developer mode**.
+4. Choose **Load unpacked** and select the extracted `extension` folder.
+5. Pin Pogo Scout from the browser's Extensions menu if you want quick access.
 
-The signed-in PoGo Coordinates search page was visible in Chrome and showed the logged-in marker plus 10 rendered Gengar (Fall 2023 Costume) results. The extension was subsequently loaded, but its panel reported that the search page was unavailable; reload the search tab after loading the updated extension, then use “重新檢查.” Background scheduling and desktop notifications still need successful end-to-end verification.
+## Set up and search
 
-## Load unpacked for development
+1. Open [PoGo Coordinates](https://pogocoordinates.com/search) in the same browser profile and sign in.
+2. Choose the Pokémon and other filters on the PoGo Coordinates page. Pogo Scout uses the filters currently selected on that page.
+3. Keep the search page open and make sure its **Search** button is visible and available.
+4. Open Pogo Scout from the browser toolbar. Check that the panel reports the search page is connected.
+5. Choose how you want to search:
+   - **Manual search:** Select **手動搜尋** to press the page's Search button once.
+   - **Automatic search:** Turn on **自動搜尋** and choose a regular, custom, or random interval.
 
-1. Open `chrome://extensions` in Chrome or `brave://extensions` in Brave.
-2. Turn on Developer mode and choose **Load unpacked**.
-3. Select this project's `extension` folder.
-4. Open `https://pogocoordinates.com/search` in that same browser profile and sign in normally.
-5. Set the desired Pokemon and filters on the site, open the Pogo Scout side panel, confirm the connection, and enable monitoring.
+Manual search and automatic search are separate. A manual search runs once and does not change the automatic search schedule.
 
-The included `extension.zip` can be shared privately as source, but users still need to load/install it in their browser. A public URL alone cannot run this browser extension.
+### Choose an automatic interval
+
+- **Regular interval:** Choose one of the available preset intervals.
+- **Custom interval:** Enter a number of seconds or minutes.
+- **Random interval:** Enter a minimum and maximum number of seconds. For example, `60` to `120` chooses a random wait between 1 and 2 minutes for each search.
+
+## Results and notifications
+
+Manual and automatic searches appear together in the **Search results** list. Desktop notifications are sent for newly detected results. The first successful search establishes a baseline, so results already present at that point are not notified as new. Repeated results are deduplicated.
+
+Use **Clear search results** in Settings to remove the result list and deduplication history. The next search creates a new baseline.
+
+For desktop notifications, allow notifications for your browser in both the browser and your operating system settings.
+
+## Important notes
+
+- Keep the signed-in PoGo Coordinates search page open in the same browser profile. The extension needs the page's visible Search button and displayed results.
+- Automatic searching only runs while the browser is open and the computer is awake. The extension cannot search after the browser is fully closed or while the computer is asleep.
+- Search intervals, recent results, and deduplication history are stored locally in your browser. They are not synced to other devices.
+- The extension depends on the site's page layout. If the Search button or result cards change, the extension may need an update.
+- Follow PoGo Coordinates' [terms of use](https://pogocoordinates.com/terms). Stop searching if the site reports a rate limit or blocks the action.
 
 ## 繁體中文
 
-Pogo Scout 是一款輕量級瀏覽器擴充功能，供 PoGo Coordinates 搜尋頁使用。它不會呼叫網站的搜尋 API，而是在已登入的搜尋頁按下可見的 Search 按鈕，再讀取頁面上顯示的結果卡片。擴充功能不會讀取、複製或儲存網站的登入資料或 Cookie。
+Pogo Scout 是一款瀏覽器擴充功能，會讀取 [PoGo Coordinates 搜尋頁](https://pogocoordinates.com/search) 上顯示的結果，並在發現新結果時通知你。先在 PoGo Coordinates 設定搜尋條件，再使用 Pogo Scout 手動搜尋一次，或設定自動搜尋間隔。
 
-### 專案進度
+### 使用前準備
 
-1. **介面原型 — 已完成。** 專案根目錄包含響應式儀表板原型。
-2. **連接搜尋頁 — 已以瀏覽器擴充功能原型實作。** 擴充功能會確認搜尋頁登入狀態、按下 Search，並讀取顯示的寶可夢結果。寶可夢、地點、Shiny 等篩選條件都在 PoGo Coordinates 網站設定。
-3. **背景監控與通知 — 已實作，仍需在實際瀏覽器完成端對端驗證。** 自動搜尋支援常用的 1 至 5 分鐘間隔、自訂秒數或分鐘，以及隨機秒數範圍。手動搜尋會立即執行一次，不改變自動搜尋排程。手動與自動搜尋結果會顯示在同一份清單；新出現的結果會加入本機活動紀錄並送出桌面通知。
-4. **個人使用與散佈 — 待處理。** 可打包擴充功能並私下分享，讓每位使用者在自己的瀏覽器安裝，並自行登入 PoGo Coordinates。
-5. **公開網站 — 可選的配套項目。** 靜態網站可用來介紹或提供擴充功能下載；實際搜尋監控由擴充功能執行，不需要應用程式資料庫或額外的使用者帳號。
+- 使用支援 Manifest V3 擴充功能的桌面瀏覽器，例如 Google Chrome 或 Brave。
+- 在同一個瀏覽器設定檔登入 PoGo Coordinates。
+- 保持 PoGo Coordinates 搜尋頁開啟。
 
-### 使用範圍與限制
+Pogo Scout 不會替你登入，也不會呼叫網站的搜尋 API。它會按下搜尋頁上可見的 **Search** 按鈕，並讀取頁面顯示的結果卡片；不會讀取或儲存你的密碼或 Cookie。
 
-- 搜尋條件由 PoGo Coordinates 頁面提供。完成初始比對基準後，符合目前頁面篩選條件且首次出現的結果會觸發通知；同一結果不會重複提醒。
-- 搜尋結果清單會合併顯示手動與自動搜尋結果。若瀏覽器可以讀取結果卡片中的寶可夢圖片，清單和桌面通知會使用該圖示；若圖片來源不允許匯出，通知會改用擴充功能圖示，清單則可能顯示預設符號。最近活動與圖示資料最多在本機保留 30 筆。
-- 監控時，必須在同一個瀏覽器設定檔開啟並登入 PoGo Coordinates 搜尋頁。擴充功能不會代替使用者登入。
-- 搜尋間隔、去重紀錄與最近活動儲存在 `chrome.storage.local`，不會在不同電腦間同步。每台電腦都需要各自安裝擴充功能並登入網站。
-- 預設間隔為 3 分鐘，也可選擇 1 至 5 分鐘、自訂固定秒數或分鐘，或指定最小與最大秒數進行隨機間隔。例如設定 60 至 120 秒，代表每次隨機等待 1 至 2 分鐘。請遵守網站目前的使用限制；若網站出現速率限制或阻擋自動操作，請停止監控。網站條款禁止規避速率限制、驗證或存取控制，以及大量再散佈：https://pogocoordinates.com/terms。
-- 瀏覽器完全關閉或電腦進入睡眠時，擴充功能無法持續搜尋。桌面通知也取決於瀏覽器與作業系統的通知設定。
-- Chrome／Brave 擴充功能原型尚未在使用者的實際瀏覽器完成端對端驗證。網站結果卡片的結構可能變更，公開散佈前應再次確認。
+### 安裝 Pogo Scout
 
-### 驗證紀錄 — 2026-10-29
+1. 在 GitHub 專案頁選擇 **Code → Download ZIP**，下載後解壓縮。
+2. 在瀏覽器網址列開啟擴充功能管理頁：
+   - Chrome：`chrome://extensions`
+   - Brave：`brave://extensions`
+3. 開啟右上方的「開發人員模式」。
+4. 選擇「載入未封裝項目」，再選取解壓縮後的 `extension` 資料夾。
+5. 如需快速開啟，可在瀏覽器的擴充功能選單中將 Pogo Scout 釘選到工具列。
 
-當時 Chrome 中已登入的 PoGo Coordinates 搜尋頁顯示 10 筆 Gengar (Fall 2023 Costume) 結果。載入擴充功能後，側邊欄曾回報搜尋頁無法使用；載入更新版擴充功能後，請重新載入搜尋頁並按「重新檢查」。背景排程和桌面通知仍待端對端驗證。
+### 設定並開始搜尋
 
-### 開發時載入未封裝的擴充功能
+1. 在同一個瀏覽器設定檔開啟 [PoGo Coordinates 搜尋頁](https://pogocoordinates.com/search) 並登入。
+2. 在 PoGo Coordinates 網站設定寶可夢及其他篩選條件。Pogo Scout 會沿用該頁目前選取的條件。
+3. 保持搜尋頁開啟，並確認頁面上可見且可使用 **Search** 按鈕。
+4. 從瀏覽器工具列開啟 Pogo Scout，確認面板顯示搜尋頁已連線。
+5. 選擇搜尋方式：
+   - **手動搜尋：**按「手動搜尋」，立即按一次網站上的 Search。
+   - **自動搜尋：**開啟「自動搜尋」，再選擇常規、自訂或隨機間隔。
 
-1. 在 Chrome 或 Brave 開啟 `chrome://extensions` 或 `brave://extensions`。
-2. 開啟「開發人員模式」，選擇 **載入未封裝項目**。
-3. 選取本專案的 `extension` 資料夾。
-4. 在同一個瀏覽器設定檔開啟 `https://pogocoordinates.com/search` 並正常登入。
-5. 在網站設定寶可夢與篩選條件，開啟 Pogo Scout 側邊欄，確認連線後即可啟用自動搜尋；也可單獨使用手動搜尋。
+手動搜尋與自動搜尋各自獨立。手動搜尋只執行一次，不會改變自動搜尋的排程。
 
-專案附帶的 `extension.zip` 可私下分享原始檔，但使用者仍需在瀏覽器載入或安裝擴充功能。單純提供公開網址無法執行這個瀏覽器擴充功能。
+#### 設定自動搜尋間隔
+
+- **常規間隔：**從提供的固定間隔中選擇。
+- **自訂間隔：**輸入秒數或分鐘數。
+- **隨機間隔：**輸入最小與最大秒數。例如填入 `60` 到 `120`，每次會隨機等待 1 到 2 分鐘。
+
+### 搜尋結果與通知
+
+手動與自動搜尋的結果會合併顯示在「搜尋結果」清單。新發現的結果會送出桌面通知。第一次成功搜尋時會建立比對基準，因此當時已存在的結果不會被當成新結果通知；重複結果也會去重。
+
+若要清除結果清單和去重紀錄，請在「設定」中選擇「清空搜尋結果」。下一次搜尋會重新建立比對基準。
+
+如未收到桌面通知，請確認瀏覽器和作業系統都允許該瀏覽器顯示通知。
+
+### 使用須知
+
+- 請在同一個瀏覽器設定檔保持 PoGo Coordinates 搜尋頁開啟並登入。擴充功能需要使用頁面上可見的 Search 按鈕及搜尋結果。
+- 瀏覽器完全關閉或電腦進入睡眠時，自動搜尋無法繼續執行。
+- 搜尋間隔、最近結果與去重紀錄只儲存在目前瀏覽器，不會同步到其他裝置。
+- 擴充功能依賴網站頁面結構；若 Search 按鈕或結果卡片改版，可能需要更新擴充功能。
+- 請遵守 PoGo Coordinates 的[使用條款](https://pogocoordinates.com/terms)。若網站顯示速率限制或阻擋搜尋，請停止搜尋。
