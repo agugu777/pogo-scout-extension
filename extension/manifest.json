@@ -1,9 +1,9 @@
 {
   "manifest_version": 3,
   "name": "Pogo Scout",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "在背景重複執行 PoGo Coordinates 免費搜尋，並以桌面通知提醒新結果。",
-  "permissions": ["alarms", "notifications", "storage", "tabs", "sidePanel"],
+  "permissions": ["alarms", "notifications", "storage", "tabs", "sidePanel", "offscreen"],
   "host_permissions": ["https://pogocoordinates.com/search*"],
   "background": { "service_worker": "background.js" },
   "content_security_policy": { "extension_pages": "script-src 'self'; object-src 'self'; img-src 'self' data: https:" },

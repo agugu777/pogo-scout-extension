@@ -42,6 +42,8 @@ Manual search and automatic search are separate. A manual search runs once and d
 
 Manual and automatic searches appear together in the **Search results** list. Desktop notifications are sent for newly detected results. The first successful search establishes a baseline, so results already present at that point are not notified as new. Repeated results are deduplicated.
 
+Open **Settings** to turn desktop notifications and sound cues on or off, and choose Default, Soft, Chime, or Mute. A selected sound plays once for each search that finds one or more new results. Desktop notifications stay silent so Windows does not play an additional sound for every result.
+
 Use **Clear search results** in Settings to remove the result list and deduplication history. The next search creates a new baseline.
 
 For desktop notifications, allow notifications for your browser in both the browser and your operating system settings.
@@ -97,6 +99,8 @@ Pogo Scout 不會替你登入，也不會呼叫網站的搜尋 API。它會按�
 ### 搜尋結果與通知
 
 手動與自動搜尋的結果會合併顯示在「搜尋結果」清單。新發現的結果會送出桌面通知。第一次成功搜尋時會建立比對基準，因此當時已存在的結果不會被當成新結果通知；重複結果也會去重。
+
+開啟「設定」可分別開關桌面通知和音效提示，並選擇「預設音效」、「柔和提示音」、「輕快叮咚聲」或「靜音」。每次搜尋只要找到一筆以上新結果，就會播放一次所選音效。桌面通知會以靜音方式顯示，避免 Windows 對每筆結果重複播放系統音效。
 
 若要清除結果清單和去重紀錄，請在「設定」中選擇「清空搜尋結果」。下一次搜尋會重新建立比對基準。
 

@@ -55,6 +55,8 @@ select:focus { border-color: #b7a9f7; box-shadow: 0 0 0 3px #7358e812; }
 .settings-menu { position: absolute; right: 14px; top: 58px; width: min(280px, calc(100vw - 28px)); padding: 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 12px 32px #10152230; }
 .settings-menu[hidden] { display: none; }
 .setting-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0 14px; color: var(--text); }
+.setting-select-label { display: block; margin: 1px 0 7px; color: var(--text); font-size: 13px; }
+.setting-select { margin-bottom: 12px; }
 .danger { border: 1px solid #e8c3c5; background: #fff; color: #b4232f; }
 .status-line { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px; border-top: 1px solid #f0f1f5; padding-top: 12px; margin-top: 14px; color: #666a78; font-size: 12px; }
 .count { min-width: 26px; text-align: center; background: #f2efff; color: #654dd0; border-radius: 7px; padding: 4px 7px; font-size: 12px; }

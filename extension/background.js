@@ -1,6 +1,6 @@
 const ALARM_NAME = "pogo-scout-search";
 const SEARCH_URL = "https://pogocoordinates.com/search";
-const defaults = { interval: 3, intervalMode: "preset", customValue: 1, customUnit: "minutes", randomMin: 60, randomMax: 120, running: false, recentKeys: [], activity: [], baselineReady: false, lastState: "idle", manualSearchRunning: false, manualSearchState: "idle", lastManualAt: 0, lastManualResults: [], lastAutoAt: 0, lastAutoResults: [], darkMode: false };
+const defaults = { interval: 3, intervalMode: "preset", customValue: 1, customUnit: "minutes", randomMin: 60, randomMax: 120, running: false, recentKeys: [], activity: [], baselineReady: false, lastState: "idle", manualSearchRunning: false, manualSearchState: "idle", lastManualAt: 0, lastManualResults: [], lastAutoAt: 0, lastAutoResults: [], darkMode: false, desktopNotificationEnabled: true, soundNotificationEnabled: true, selectedSound: "default" };
 
 chrome.runtime.onInstalled.addListener(async () => {
   try {
@@ -190,6 +190,11 @@ async function recordScanResults(result) {
     baselineReady: true,
     currentPageTargets: result.targets || []
   });
+  const preferences = await chrome.storage.local.get(defaults);
+  const sound = ["default", "soft", "chime", "mute"].includes(preferences.selectedSound) ? preferences.selectedSound : "default";
+  if (fresh.length && preferences.soundNotificationEnabled && sound !== "mute") await playNotificationSound(sound);
+  if (!preferences.desktopNotificationEnabled) return { ok: true, fresh };
+
   for (const spawn of fresh) {
     try {
       await chrome.notifications.create(`spawn-${Date.now()}-${Math.random()}`, {
@@ -197,12 +202,48 @@ async function recordScanResults(result) {
         iconUrl: spawn.iconDataUrl?.startsWith("data:image/") ? spawn.iconDataUrl : "notification.png",
         title: `發現 ${spawn.name}`,
         message: `${spawn.location || "搜尋結果"} · CP ${spawn.cp || "—"}`,
-        contextMessage: "PoGo Coordinates 新搜尋結果"
+        contextMessage: "PoGo Coordinates 新搜尋結果",
+        silent: true
       });
     } catch (error) {
       await chrome.storage.local.set({ lastError: `桌面通知無法顯示：${error?.message || error}` });
     }
   }
   return { ok: true, fresh };
+}
+
+async function playNotificationSound(sound) {
+  try {
+    await ensureOffscreenDocument();
+    await chrome.runtime.sendMessage({ type: "POGO_SCOUT_PLAY_SOUND", sound });
+  } catch (error) {
+    console.warn("Pogo Scout could not play the selected notification sound.", error);
+  }
+}
+
+let creatingOffscreenDocument;
+async function ensureOffscreenDocument() {
+  if (!chrome.offscreen) throw new Error("此瀏覽器不支援擴充功能背景音效。");
+
+  if (typeof chrome.offscreen.hasDocument === "function" && await chrome.offscreen.hasDocument()) return;
+  if (typeof chrome.runtime.getContexts === "function") {
+    const contexts = await chrome.runtime.getContexts({
+      contextTypes: ["OFFSCREEN_DOCUMENT"],
+      documentUrls: [chrome.runtime.getURL("offscreen.html")]
+    });
+    if (contexts.length) return;
+  }
+
+  if (!creatingOffscreenDocument) {
+    creatingOffscreenDocument = chrome.offscreen.createDocument({
+      url: "offscreen.html",
+      reasons: ["AUDIO_PLAYBACK"],
+      justification: "播放使用者選擇的新搜尋結果提示音。"
+    }).catch(async (error) => {
+      const alreadyOpen = typeof chrome.offscreen.hasDocument === "function" && await chrome.offscreen.hasDocument();
+      if (!alreadyOpen && !/single offscreen document/i.test(error?.message || "")) throw error;
+    }).finally(() => { creatingOffscreenDocument = null; });
+  }
+  await creatingOffscreenDocument;
 }
 

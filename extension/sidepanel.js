@@ -1,7 +1,7 @@
 const $ = (selector) => document.querySelector(selector);
 
 async function state() {
-  return chrome.storage.local.get({ interval: 3, intervalMode: "preset", customValue: 1, customUnit: "minutes", randomMin: 60, randomMax: 120, running: false, activity: [], lastState: "idle", lastCheckedAt: 0, lastError: "", manualSearchRunning: false, manualSearchState: "idle", lastManualAt: 0, lastManualResults: [], lastAutoAt: 0, lastAutoResults: [], darkMode: false });
+  return chrome.storage.local.get({ interval: 3, intervalMode: "preset", customValue: 1, customUnit: "minutes", randomMin: 60, randomMax: 120, running: false, activity: [], lastState: "idle", lastCheckedAt: 0, lastError: "", manualSearchRunning: false, manualSearchState: "idle", lastManualAt: 0, lastManualResults: [], lastAutoAt: 0, lastAutoResults: [], darkMode: false, desktopNotificationEnabled: true, soundNotificationEnabled: true, selectedSound: "default" });
 }
 function intervalConfig() {
   const mode = $("#interval-mode").value;
@@ -31,6 +31,9 @@ async function render() {
   showIntervalFields();
   document.body.classList.toggle("dark", Boolean(saved.darkMode));
   $("#dark-mode").checked = Boolean(saved.darkMode);
+  $("#desktop-notifications").checked = Boolean(saved.desktopNotificationEnabled);
+  $("#sound-notifications").checked = Boolean(saved.soundNotificationEnabled);
+  $("#selected-sound").value = saved.selectedSound || "default";
   $("#monitor-state").textContent = statusLabel(saved);
   $("#last-checked").textContent = saved.lastCheckedAt
     ? `上次搜尋 ${new Date(saved.lastCheckedAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`
@@ -183,6 +186,16 @@ document.addEventListener("keydown", (event) => {
 $("#dark-mode").addEventListener("change", async (event) => {
   await chrome.storage.local.set({ darkMode: event.target.checked });
   document.body.classList.toggle("dark", event.target.checked);
+});
+
+$("#desktop-notifications").addEventListener("change", async (event) => {
+  await chrome.storage.local.set({ desktopNotificationEnabled: event.target.checked });
+});
+$("#sound-notifications").addEventListener("change", async (event) => {
+  await chrome.storage.local.set({ soundNotificationEnabled: event.target.checked });
+});
+$("#selected-sound").addEventListener("change", async (event) => {
+  await chrome.storage.local.set({ selectedSound: event.target.value });
 });
 
 $("#clear-results").addEventListener("click", async () => {

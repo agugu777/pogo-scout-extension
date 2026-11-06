@@ -14,6 +14,15 @@
     <section class="settings-menu" id="settings" hidden aria-label="設定">
       <div class="section-head"><h2>設定</h2></div>
       <div class="setting-row"><span>深色模式</span><label class="toggle" aria-label="深色模式"><input id="dark-mode" type="checkbox"><span></span></label></div>
+      <div class="setting-row"><span>開啟桌面通知</span><label class="toggle" aria-label="開啟桌面通知"><input id="desktop-notifications" type="checkbox"><span></span></label></div>
+      <div class="setting-row"><span>開啟音效提示</span><label class="toggle" aria-label="開啟音效提示"><input id="sound-notifications" type="checkbox"><span></span></label></div>
+      <label class="setting-select-label" for="selected-sound">音效選擇</label>
+      <select class="setting-select" id="selected-sound">
+        <option value="default">預設音效</option>
+        <option value="soft">柔和提示音</option>
+        <option value="chime">輕快叮咚聲</option>
+        <option value="mute">靜音</option>
+      </select>
       <button class="button danger" id="clear-results">清空搜尋結果</button>
     </section>
   </header>
