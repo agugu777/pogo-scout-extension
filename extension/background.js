@@ -201,7 +201,7 @@ async function recordScanResults(result) {
         type: "basic",
         iconUrl: spawn.iconDataUrl?.startsWith("data:image/") ? spawn.iconDataUrl : "notification.png",
         title: `發現 ${spawn.name}`,
-        message: `${spawn.location || "搜尋結果"} · CP ${spawn.cp || "—"}`,
+        message: `${spawn.location || "搜尋結果"} · CP ${spawn.cp || "—"} · IV ${spawn.iv || "—"}`,
         contextMessage: "PoGo Coordinates 新搜尋結果",
         silent: true
       });

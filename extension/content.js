@@ -3,9 +3,13 @@ const iconCache = new Map();
 
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   if (message?.type === "POGO_SCOUT_READ_STATE") {
-    const login = detectLogin();
-    readResults(false).then((result) => {
-      sendResponse({ state: login.loggedIn ? "ready" : "login_required", error: login.loggedIn ? "" : "請先登入 PoGo Coordinates。", targets: result.targets });
+    Promise.all([waitForSearchButton(10000), readResults(false)]).then(([button, result]) => {
+      const loggedOut = detectLogin().loggedOut;
+      sendResponse({
+        state: loggedOut ? "login_required" : button ? "ready" : "search_unavailable",
+        error: loggedOut ? "請先登入 PoGo Coordinates。" : button ? "" : "搜尋頁尚未完成載入，請稍候。",
+        targets: result.targets
+      });
     });
     return true;
   }
@@ -18,6 +22,10 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     return true;
   }
 });
+
+// The site renders its search UI asynchronously. Probe once after the content
+// script starts so the side panel can connect without a manual refresh/search.
+setTimeout(() => reportPageState(), 0);
 
 function searchPage(includeIcons = true) {
   if (scanPromise) return scanPromise;
@@ -38,12 +46,12 @@ async function performSearch(includeIcons) {
   try {
     const before = await readResults(false);
     const login = detectLogin();
-    if (!login.loggedIn) {
+    if (login.loggedOut) {
       const state = { state: "login_required", error: "請先在 PoGo Coordinates 登入；本工具不會讀取或保存帳密。" };
       reportStatus(state);
       return state;
     }
-    const searchButton = findSearchButton();
+    const searchButton = await waitForSearchButton();
     if (!searchButton || searchButton.disabled) {
       const state = { state: "search_unavailable", error: "找不到可用的 Search 按鈕，請確認目前在搜尋頁。" };
       reportStatus(state);
@@ -52,7 +60,7 @@ async function performSearch(includeIcons) {
     await waitForSearchToFinish(searchButton);
     const results = await readResults(includeIcons);
     const spawns = results.cards.filter((card) => card.key && card.name);
-    const data = { state: "running", spawns, targets: results.targets, loggedIn: login.loggedIn, resultCount: spawns.length, changed: results.signature !== before.signature };
+    const data = { state: "running", spawns, targets: results.targets, loggedIn: !login.loggedOut, resultCount: spawns.length, changed: results.signature !== before.signature };
     return data;
   } catch (error) {
     const state = { state: "error", error: error?.message || "搜尋頁讀取失敗。" };
@@ -67,7 +75,37 @@ function reportStatus(status) {
 
 function detectLogin() {
   const text = document.body?.innerText || "";
-  return { loggedIn: /Tier:\s*Logged in/i.test(text) || /Showing\s+\d+\s+spawns/i.test(text) || /Shiny for your account/i.test(text) };
+  const explicitLoginPrompt = /\b(log\s*in|sign\s*in)\b/i.test(text) &&
+    (document.querySelector('input[type="password"], form[action*="login" i], form[action*="sign-in" i]') !== null);
+  return { loggedOut: explicitLoginPrompt };
+}
+
+async function waitForSearchButton(timeoutMs = 10000) {
+  const immediate = findSearchButton();
+  if (immediate) return immediate;
+  return new Promise((resolve) => {
+    const observer = new MutationObserver(() => {
+      const button = findSearchButton();
+      if (button) finish(button);
+    });
+    const timer = setTimeout(() => finish(findSearchButton()), timeoutMs);
+    function finish(button) {
+      observer.disconnect();
+      clearTimeout(timer);
+      resolve(button);
+    }
+    observer.observe(document.documentElement, { subtree: true, childList: true, characterData: true });
+  });
+}
+
+async function reportPageState() {
+  try {
+    await waitForSearchButton(10000);
+    const login = detectLogin();
+    reportStatus(login.loggedOut
+      ? { state: "login_required", error: "請先在 PoGo Coordinates 登入；本工具不會讀取或保存帳密。" }
+      : { state: findSearchButton() ? "ready" : "search_unavailable", error: findSearchButton() ? "" : "搜尋頁尚未完成載入，請稍候。" });
+  } catch { /* A page navigation can destroy the document during the probe. */ }
 }
 
 function findSearchButton() {

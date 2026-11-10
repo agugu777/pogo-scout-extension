@@ -68,7 +68,7 @@ async function render() {
     }
     const copy = document.createElement("div"); copy.className = "activity-copy";
     const name = document.createElement("strong"); name.textContent = item.name;
-    const detail = document.createElement("small"); detail.textContent = `${item.location || "搜尋結果"} · CP ${item.cp || "—"}`;
+    const detail = document.createElement("small"); detail.textContent = `${item.location || "搜尋結果"} · CP ${item.cp || "—"} · IV ${item.iv || "—"}`;
     copy.append(name, detail);
     const time = document.createElement("time"); time.textContent = new Date(item.foundAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
     row.append(copy, time); list.append(row);
